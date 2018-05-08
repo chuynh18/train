@@ -4,6 +4,7 @@ var database = firebase.database();
 var trainData = [];
 
 // SCREW MOMENT.JS BECAUSE I CAN MATH... maybe
+// below is time conversion logic
 
 // this returns the current time in minutes
 var timeMinutes = function() {
@@ -48,7 +49,7 @@ var whenIsTheNextTrain = function(i) {
 
 // this calculates the time that the next train leaves
 var timeOfNextTrain = function(i) {
-    var timeNextTrain = timeMinutes() + whenIsTheNextTrain(i);
+    var timeNextTrain = (timeMinutes() + whenIsTheNextTrain(i)) % 1440;
     if (timeNextTrain < 720) {
         var hours = Math.floor(timeNextTrain/60);
         var min = timeNextTrain % 60;
@@ -74,10 +75,12 @@ var timeOfNextTrain = function(i) {
             min = "0" + min;
         };
         return(hours + ":" + min + " PM");
-    };
+    }
+    // TODO: handle timeNextTrain >= 1440 here
 };
+// end time logic
 
-// populate table on page with info contained in trainData
+// populate table on page with info contained in trainData - called by another function
 var populateTable = function() {
     $("#trainSchedule").empty();
     for (var i = 0; i < trainData.length; i++) {
@@ -119,12 +122,12 @@ var readFromFirebase = function() {
     });
 };
 
-// ------------- let's start with some function calls -------------
-
 // write to Firebase
 var writeToFirebase = function() {
     database.ref().set({trains: trainData});
 };
+
+// ------------- let's start with some function calls -------------
 
 // to start off, we should read from Firebase
 readFromFirebase();
