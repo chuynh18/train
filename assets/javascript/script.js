@@ -84,9 +84,6 @@ $(function() {
             if (min < 10) {
                 min = "0" + min;
             };
-            if (hours === 0) {
-                hours = "12";
-            };
             return(hours + ":" + min + " PM");
         }
         // TODO: handle timeNextTrain >= 1440 here
