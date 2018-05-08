@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>IT'S TRAIN-TOBER</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous" />
+        <link rel="stylesheet" href="assets/css/style.css" />
+		<link rel="icon" type="image/png" href="assets/images/favicon.png" />
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md">
+                    <img src="assets/images/thomas.gif" alt="thomas" class="mx-auto d-block" />
+                </div>
+            </div>
+        </div>
+
+        <div class="container border mt-4">
+            <div class="row mt-4 border">
+                <div class="col-md border text-light bg-dark">
+                    <h2>ADD A TRAIN!</h2>
+                </div>
+            </div>
+            <div class="row border">
+                <div class="col-md">
+                    <form>
+                        <div class="form-group">
+                            <label for="trainName">Train name</label>
+                            <input type="text" class="form-control" id="trainName" aria-describedby="train" placeholder="Enter train name">
+                        </div>
+                        <div class="form-group">
+                            <label for="trainDestination">Destination</label>
+                            <input type="text" class="form-control" id="trainDestination" aria-describedby="train" placeholder="Enter destination">
+                        </div>
+                        <div class="form-group">
+                            <label for="trainFirstArrival">First arrival</label>
+                            <input type="time" step="60" class="form-control" id="trainFirstArrival" aria-describedby="train" placeholder="First arrival">
+                        </div>
+                        <div class="form-group">
+                            <label for="trainFrequency">Frequency (minutes)</label>
+                            <input type="number" min="1" class="form-control" id="trainFrequency" aria-describedby="train" placeholder="Enter frequency in minutes">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="trainSubmit">Submit</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md border text-light bg-dark">
+                    <h2>TRAIN SCHEDULE!</h2>
+                </div>
+            </div>
+            <div class="row border">
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Train name</th>
+                            <th scope="col">Destination</th>
+                            <th scope="col">Frequency (minutes)</th>
+                            <th scope="col">Next arrival</th>
+                            <th scope="col">Minutes away</th>
+                        </tr>
+                        <tbody id="trainSchedule">
+
+                        </tbody>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+        <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+        <script>
+          // Initialize Firebase
+          var config = {
+            apiKey: "AIzaSyBIOM6yLnvCk10ifJtCh48_1vwGPzTZNb0",
+            authDomain: "click-6b49a.firebaseapp.com",
+            databaseURL: "https://click-6b49a.firebaseio.com",
+            projectId: "click-6b49a",
+            storageBucket: "click-6b49a.appspot.com",
+            messagingSenderId: "1079059093324"
+          };
+          firebase.initializeApp(config);
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+        <script src="assets/javascript/script.js"></script>
+    </body>
+</html>
