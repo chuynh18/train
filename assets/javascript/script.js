@@ -126,7 +126,7 @@ $(function() {
     // read from Firebase and populate table
     var readFromFirebase = function() {
         database.ref().on("value", function(snapshot) {
-        console.log(snapshot.val());
+        // console.log(snapshot.val());
         // write what Firebase gave us into trainData
         trainData = snapshot.val().trains;
         populateTable(); // wanted to have this not live here but JavaScript's async nature strikes again!
@@ -134,6 +134,18 @@ $(function() {
         console.log("The read failed: " + errorObject.code);
         });
     };
+
+    // every 60 seconds
+    var readFromFirebase60 = setInterval(function() {
+        database.ref().on("value", function(snapshot) {
+        // console.log(snapshot.val());
+        // write what Firebase gave us into trainData
+        trainData = snapshot.val().trains;
+        populateTable(); // wanted to have this not live here but JavaScript's async nature strikes again!
+        }, function(errorObject) {
+        console.log("The read failed: " + errorObject.code);
+        });
+    }, 60000);
 
     // write to Firebase
     var writeToFirebase = function() {
@@ -144,7 +156,6 @@ $(function() {
 
     // to start off, we should read from Firebase
     readFromFirebase();
-
 
     // ------------- this part handles what happens when the user submits data via the form -------------
 
