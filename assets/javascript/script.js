@@ -116,7 +116,6 @@ $(function() {
             // newRow.append(tStart);
             newRow.append(tNA);
             newRow.append(tMinAway);
-            // append first arrival - need to do the logic for that first
 
             // append to the table!
             $("#trainSchedule").append(newRow);
