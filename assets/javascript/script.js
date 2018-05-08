@@ -198,6 +198,8 @@ $(document).on("click", "#trainSubmit", function(event) {
 });
 
 // Object constructor for train data
+// I realize this defeats the point of the homework by vastly simplifying how I interact with Firebase
+// HAUEHUAHEUAHEUAUUHAHUEHUAUHAHUEHUAUHEHUAHAHUEAHAOEHOOOHOAHOEUAHE
 var TrainObjectBuilder = function(name, destination, firstArrival, freq) {
     this.trainName = name;
     this.trainDestination = destination;
