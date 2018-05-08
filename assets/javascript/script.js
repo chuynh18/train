@@ -58,6 +58,9 @@ $(function() {
             if (min < 10) {
                 min = "0" + min;
             };
+            if (hours === 0) {
+                hours = "12";
+            };
             return(hours + ":" + min + " AM");
         }
         else if (timeNextTrain === 720) {
@@ -68,6 +71,9 @@ $(function() {
             if (min < 10) {
                 min = "0" + minutes;
             };
+            if (hours === 0) {
+                hours = "12";
+            };
             return("12:" + min + " PM");
         }
         else if (timeNextTrain > 779) {
@@ -75,6 +81,9 @@ $(function() {
             var min = timeNextTrain % 60;
             if (min < 10) {
                 min = "0" + min;
+            };
+            if (hours === 0) {
+                hours = "12";
             };
             return(hours + ":" + min + " PM");
         }
