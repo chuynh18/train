@@ -1,6 +1,61 @@
 "use strict";
 
+var database = firebase.database();
 var trainData = [];
+
+// populate table on page with info contained in trainData
+var populateTable = function() {
+    $("#trainSchedule").empty();
+    for (var i = 0; i < trainData.length; i++) {
+        var newRow = $("<tr>");
+        var tName = $("<td>");
+        var tDest = $("<td>");
+        var tFreq = $("<td>");
+        var tNA = $("<td>"); // next arrival
+        var tMinAway = $("<td>"); // minutes away
+        
+        tName.text(trainData[i].trainName);
+        tDest.text(trainData[i].trainDestination);
+        tFreq.text(trainData[i].trainFrequency);
+        // text for next arrival
+        // text for minutes away
+        
+        newRow.append(tName);
+        newRow.append(tDest);
+        newRow.append(tFreq);
+        // append first arrival - need to do the logic for that first
+        // append minutes away - need to do the logic for that first
+
+        // append to the table!
+        $("#trainSchedule").append(newRow);
+    };
+};
+
+// firebase functions...
+// read from Firebase and populate table
+var readFromFirebase = function() {
+    database.ref().on("value", function(snapshot) {
+    console.log(snapshot.val());
+    // write what Firebase gave us into trainData
+    trainData = snapshot.val().trains;
+    populateTable();
+    }, function(errorObject) {
+    console.log("The read failed: " + errorObject.code);
+    });
+};
+
+// ------------- let's start with some function calls -------------
+
+// write to Firebase
+var writeToFirebase = function() {
+    database.ref().set({trains: trainData});
+};
+
+// to start off, we should read from Firebase
+readFromFirebase();
+
+
+// ------------- this part handles what happens when the user submits data via the form -------------
 
 // grab values on form submission
 $(document).on("click", "#trainSubmit", function(event) {
@@ -57,7 +112,11 @@ $(document).on("click", "#trainSubmit", function(event) {
             $("#trainFirstArrival").val("");
             $("#trainFrequency").val("");
 
+            // rebuild the table every time the user successfully adds train data
             populateTable();
+
+            // write to FireBase
+            writeToFirebase();
         };
     };
 
@@ -69,32 +128,4 @@ var TrainObjectBuilder = function(name, destination, firstArrival, freq) {
     this.trainDestination = destination;
     this.trainFirstArrival = firstArrival;
     this.trainFrequency = freq;
-};
-
-// populate table on page with info contained in trainData
-var populateTable = function() {
-    $("#trainSchedule").empty();
-    for (var i = 0; i < trainData.length; i++) {
-        var newRow = $("<tr>");
-        var tName = $("<td>");
-        var tDest = $("<td>");
-        var tFreq = $("<td>");
-        var tNA = $("<td>"); // next arrival
-        var tMinAway = $("<td>"); // minutes away
-        
-        tName.text(trainData[i].trainName);
-        tDest.text(trainData[i].trainDestination);
-        tFreq.text(trainData[i].trainFrequency);
-        // text for next arrival
-        // text for minutes away
-        
-        newRow.append(tName);
-        newRow.append(tDest);
-        newRow.append(tFreq);
-        // append first arrival - need to do the logic for that first
-        // append minutes away - need to do the logic for that first
-
-        // append to the table!
-        $("#trainSchedule").append(newRow);
-    };
 };
