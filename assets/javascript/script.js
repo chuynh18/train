@@ -92,7 +92,8 @@ $(function() {
     };
     // end time logic
 
-    // populate table on page with info contained in trainData - called by another function
+    // populate table on page with info contained in trainData
+    // this function gets called by readFromFirebase() and form subimssion
     var populateTable = function() {
         $("#trainSchedule").empty();
         for (var i = 0; i < trainData.length; i++) {
@@ -225,7 +226,7 @@ $(function() {
     // why is this even here
     var audio = new Audio("assets/audio/annoying.webm");
     document.getElementById("THOMASSS").addEventListener('click', function() {
-        audio.pause();
+        audio.pause(); // so spam clicking Thomas won't wreck innocent ears
         audio.play();
         document.getElementById("toldU").textContent = "Pause functionality was deemed to be below the line.  Sorry.  Maybe next sprint aka never.";
     });
