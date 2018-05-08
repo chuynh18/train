@@ -3,6 +3,80 @@
 var database = firebase.database();
 var trainData = [];
 
+// SCREW MOMENT.JS BECAUSE I CAN MATH... maybe
+
+// this returns the current time in minutes
+var timeMinutes = function() {
+    var d = new Date();
+    return(60*d.getHours())+d.getMinutes();
+};
+
+// this returns the time that a given train leaves in minutes
+var whenIsTrainInService = function(i) {
+    var trainTime = trainData[i].trainFirstArrival.replace(":", "");
+    var hours = parseInt(trainTime.slice(0,2));
+    var minutes = parseInt(trainTime.slice(2));
+    return (60*hours+minutes);
+};
+
+// returns true if the train has started running today, else false
+var isTrainRunningYet = function(i) {
+    if (timeMinutes() >= whenIsTrainInService(i)) {
+        return true;
+    }
+    if (timeMinutes() < whenIsTrainInService(i)) {
+        return false;
+    };
+};
+
+// this calculates the number of minutes until the next train leaves
+var whenIsTheNextTrain = function(i) {
+    if (isTrainRunningYet(i) === true) {
+        var freq = parseInt(trainData[i].trainFrequency);
+        var currentTime = timeMinutes();
+        var originalDepartureTime = whenIsTrainInService(i);
+        var newDepartureTime = originalDepartureTime;
+        while (currentTime >= newDepartureTime) {
+            newDepartureTime += freq;
+        };
+        return(newDepartureTime - currentTime);
+    }
+    else if (isTrainRunningYet(i) === false) {
+        return(whenIsTrainInService(i) - timeMinutes());
+    };
+};
+
+// this calculates the time that the next train leaves
+var timeOfNextTrain = function(i) {
+    var timeNextTrain = timeMinutes() + whenIsTheNextTrain(i);
+    if (timeNextTrain < 720) {
+        var hours = Math.floor(timeNextTrain/60);
+        var min = timeNextTrain % 60;
+        if (min < 10) {
+            min = "0" + min;
+        };
+        return(hours + ":" + min + " AM");
+    }
+    else if (timeNextTrain === 720) {
+        return("12:00 PM");
+    }
+    else if (timeNextTrain <= 779) {
+        var min = timeNextTrain - 720;
+        if (min < 10) {
+            min = "0" + minutes;
+        };
+        return("12:" + min + " PM");
+    }
+    else if (timeNextTrain > 779) {
+        var hours = (Math.floor(timeNextTrain/60)) - 12;
+        var min = timeNextTrain % 60;
+        if (min < 10) {
+            min = "0" + min;
+        };
+        return(hours + ":" + min + " PM");
+    };
+};
+
 // populate table on page with info contained in trainData
 var populateTable = function() {
     $("#trainSchedule").empty();
@@ -17,14 +91,15 @@ var populateTable = function() {
         tName.text(trainData[i].trainName);
         tDest.text(trainData[i].trainDestination);
         tFreq.text(trainData[i].trainFrequency);
-        // text for next arrival
-        // text for minutes away
+        tNA.text(timeOfNextTrain(i));
+        tMinAway.text(whenIsTheNextTrain(i));
         
         newRow.append(tName);
         newRow.append(tDest);
         newRow.append(tFreq);
+        newRow.append(tNA);
+        newRow.append(tMinAway);
         // append first arrival - need to do the logic for that first
-        // append minutes away - need to do the logic for that first
 
         // append to the table!
         $("#trainSchedule").append(newRow);
@@ -38,7 +113,7 @@ var readFromFirebase = function() {
     console.log(snapshot.val());
     // write what Firebase gave us into trainData
     trainData = snapshot.val().trains;
-    populateTable();
+    populateTable(); // wanted to have this not live here but JavaScript's async nature strikes again!
     }, function(errorObject) {
     console.log("The read failed: " + errorObject.code);
     });
@@ -78,10 +153,10 @@ $(document).on("click", "#trainSubmit", function(event) {
         var localFrequency = $("#trainFrequency").val();
 
         // console logging to assist development
-        console.log("var localTrainName is: " + localTrainName);
-        console.log("var localDestination is: " + localDestination);
-        console.log("var localTrainFirstArrival is: " + localTrainFirstArrival);
-        console.log("var localFrequency is: " + localFrequency);
+        // console.log("var localTrainName is: " + localTrainName);
+        // console.log("var localDestination is: " + localDestination);
+        // console.log("var localTrainFirstArrival is: " + localTrainFirstArrival);
+        // console.log("var localFrequency is: " + localFrequency);
 
         // check for dupes
         var isDupe = false;
@@ -89,7 +164,7 @@ $(document).on("click", "#trainSubmit", function(event) {
             if (trainData[i].trainName === localTrainName) {
                 // set isDupe = true if it is a dupe
                 isDupe = true;
-                console.log(isDupe);
+                // console.log(isDupe);
             };
         };
 
