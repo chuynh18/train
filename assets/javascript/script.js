@@ -3,95 +3,93 @@
 var database = firebase.database();
 var trainData = [];
 
+// SCREW MOMENT.JS BECAUSE I CAN MATH... maybe
+// below is time conversion logic
+
+// this returns the current time in minutes
+var timeMinutes = function() {
+    var d = new Date();
+    return(60*d.getHours())+d.getMinutes();
+};
+
+// this returns the time that a given train leaves in minutes
+var whenIsTrainInService = function(i) {
+    var trainTime = trainData[i].trainFirstArrival.replace(":", "");
+    var hours = parseInt(trainTime.slice(0,2));
+    var minutes = parseInt(trainTime.slice(2));
+    return (60*hours+minutes);
+};
+
+// returns true if the train has started running today, else false
+var isTrainRunningYet = function(i) {
+    if (timeMinutes() >= whenIsTrainInService(i)) {
+        return true;
+    }
+    if (timeMinutes() < whenIsTrainInService(i)) {
+        return false;
+    };
+};
+
+// this calculates the number of minutes until the next train leaves
+var whenIsTheNextTrain = function(i) {
+    if (isTrainRunningYet(i) === true) {
+        var freq = parseInt(trainData[i].trainFrequency);
+        var currentTime = timeMinutes();
+        var originalDepartureTime = whenIsTrainInService(i);
+        var newDepartureTime = originalDepartureTime;
+        while (currentTime >= newDepartureTime) {
+            newDepartureTime += freq;
+        };
+        return(newDepartureTime - currentTime);
+    }
+    else if (isTrainRunningYet(i) === false) {
+        return(whenIsTrainInService(i) - timeMinutes());
+    };
+};
+
+// this calculates the time that the next train leaves
+// lolo after writing this, I totally get why moment.js exists
+// NEVER AGAIN
+var timeOfNextTrain = function(i) {
+    var timeNextTrain = (timeMinutes() + whenIsTheNextTrain(i)) % 1440;
+    if (timeNextTrain < 720) {
+        var hours = Math.floor(timeNextTrain/60);
+        var min = timeNextTrain % 60;
+        if (min < 10) {
+            min = "0" + min;
+        };
+        if (hours === 0) {
+            hours = "12";
+        };
+        return(hours + ":" + min + " AM");
+    }
+    else if (timeNextTrain === 720) {
+        return("12:00 PM");
+    }
+    else if (timeNextTrain <= 779) {
+        var min = timeNextTrain - 720;
+        if (min < 10) {
+            min = "0" + minutes;
+        };
+        if (hours === 0) {
+            hours = "12";
+        };
+        return("12:" + min + " PM");
+    }
+    else if (timeNextTrain > 779) {
+        var hours = (Math.floor(timeNextTrain/60)) - 12;
+        var min = timeNextTrain % 60;
+        if (min < 10) {
+            min = "0" + min;
+        };
+        return(hours + ":" + min + " PM");
+    }
+    // TODO: handle timeNextTrain >= 1440 here
+    // jk omg lol why handle it here lmao, rofl that would have been stupid wtf duh
+    // handled with % 1440 near the start of this function gg ez
+};
+// end time logic
 $(function() {
-
-    // SCREW MOMENT.JS BECAUSE I CAN MATH... maybe
-    // below is time conversion logic
-
-    // this returns the current time in minutes
-    var timeMinutes = function() {
-        var d = new Date();
-        return(60*d.getHours())+d.getMinutes();
-    };
-
-    // this returns the time that a given train leaves in minutes
-    var whenIsTrainInService = function(i) {
-        var trainTime = trainData[i].trainFirstArrival.replace(":", "");
-        var hours = parseInt(trainTime.slice(0,2));
-        var minutes = parseInt(trainTime.slice(2));
-        return (60*hours+minutes);
-    };
-
-    // returns true if the train has started running today, else false
-    var isTrainRunningYet = function(i) {
-        if (timeMinutes() >= whenIsTrainInService(i)) {
-            return true;
-        }
-        if (timeMinutes() < whenIsTrainInService(i)) {
-            return false;
-        };
-    };
-
-    // this calculates the number of minutes until the next train leaves
-    var whenIsTheNextTrain = function(i) {
-        if (isTrainRunningYet(i) === true) {
-            var freq = parseInt(trainData[i].trainFrequency);
-            var currentTime = timeMinutes();
-            var originalDepartureTime = whenIsTrainInService(i);
-            var newDepartureTime = originalDepartureTime;
-            while (currentTime >= newDepartureTime) {
-                newDepartureTime += freq;
-            };
-            return(newDepartureTime - currentTime);
-        }
-        else if (isTrainRunningYet(i) === false) {
-            return(whenIsTrainInService(i) - timeMinutes());
-        };
-    };
-
-    // this calculates the time that the next train leaves
-    // lolo after writing this, I totally get why moment.js exists
-    // NEVER AGAIN
-    var timeOfNextTrain = function(i) {
-        var timeNextTrain = (timeMinutes() + whenIsTheNextTrain(i)) % 1440;
-        if (timeNextTrain < 720) {
-            var hours = Math.floor(timeNextTrain/60);
-            var min = timeNextTrain % 60;
-            if (min < 10) {
-                min = "0" + min;
-            };
-            if (hours === 0) {
-                hours = "12";
-            };
-            return(hours + ":" + min + " AM");
-        }
-        else if (timeNextTrain === 720) {
-            return("12:00 PM");
-        }
-        else if (timeNextTrain <= 779) {
-            var min = timeNextTrain - 720;
-            if (min < 10) {
-                min = "0" + minutes;
-            };
-            if (hours === 0) {
-                hours = "12";
-            };
-            return("12:" + min + " PM");
-        }
-        else if (timeNextTrain > 779) {
-            var hours = (Math.floor(timeNextTrain/60)) - 12;
-            var min = timeNextTrain % 60;
-            if (min < 10) {
-                min = "0" + min;
-            };
-            return(hours + ":" + min + " PM");
-        }
-        // TODO: handle timeNextTrain >= 1440 here
-        // jk omg lol why handle it here lmao, rofl that would have been stupid wtf duh
-        // handled with % 1440 near the start of this function gg ez
-    };
-    // end time logic
-
     // populate table on page with info contained in trainData
     // this function gets called by readFromFirebase() and form subimssion
     var populateTable = function() {
@@ -103,16 +101,19 @@ $(function() {
             var tFreq = $("<td>");
             var tNA = $("<td>"); // next arrival
             var tMinAway = $("<td>"); // minutes away
+            var tStart = $("<td>");
             
             tName.text(trainData[i].trainName);
             tDest.text(trainData[i].trainDestination);
             tFreq.text(trainData[i].trainFrequency);
             tNA.text(timeOfNextTrain(i));
+            // tStart.text(trainData[i].trainFirstArrival);
             tMinAway.text(whenIsTheNextTrain(i));
             
             newRow.append(tName);
             newRow.append(tDest);
             newRow.append(tFreq);
+            // newRow.append(tStart);
             newRow.append(tNA);
             newRow.append(tMinAway);
             // append first arrival - need to do the logic for that first
