@@ -77,6 +77,8 @@ var timeOfNextTrain = function(i) {
         return(hours + ":" + min + " PM");
     }
     // TODO: handle timeNextTrain >= 1440 here
+    // jk omg lol why handle it here lmao, rofl that would have been stupid wtf duh
+    // handled with % 1440 near the start of this function gg ez
 };
 // end time logic
 
@@ -209,3 +211,11 @@ var TrainObjectBuilder = function(name, destination, firstArrival, freq) {
     this.trainFirstArrival = firstArrival;
     this.trainFrequency = freq;
 };
+
+// why is this even here
+var audio = new Audio("assets/audio/annoying.webm");
+document.getElementById("THOMASSS").addEventListener('click', function() {
+    audio.pause();
+    audio.play();
+    document.getElementById("toldU").textContent = "Pause functionality was deemed to be below the line.  Sorry.  Maybe next sprint aka never.";
+});
