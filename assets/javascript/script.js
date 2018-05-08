@@ -50,6 +50,8 @@ $(function() {
     };
 
     // this calculates the time that the next train leaves
+    // lolo after writing this, I totally get why moment.js exists
+    // NEVER AGAIN
     var timeOfNextTrain = function(i) {
         var timeNextTrain = (timeMinutes() + whenIsTheNextTrain(i)) % 1440;
         if (timeNextTrain < 720) {
