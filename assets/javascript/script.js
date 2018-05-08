@@ -32,20 +32,22 @@ $(document).on("click", "#trainSubmit", function(event) {
         var isDupe = false;
         for (var i = 0; i < trainData.length; i++) {
             if (trainData[i].trainName === localTrainName) {
+                // set isDupe = true if it is a dupe
                 isDupe = true;
                 console.log(isDupe);
             };
         };
 
-        // if it's a dupe, alert the user, clear out only the trainName entry box, reset isDupe to false
+        // if isDupe === true, alert the user, clear out only the trainName entry box, reset isDupe to false
         if (isDupe === true) {
             $("#trainName").val("");
+            // flip isDupe = false so we don't get stuck 4evaaa
             isDupe = false;
             alert("Please use a different train name; the one you just used is a duplicate.")
         }
 
-        // else, accept it
-        else {
+        // otherwise, isDupe === false and we accept the input
+        else if (isDupe === false) {
             // construct object and push to array
             trainData.push(new TrainObjectBuilder(localTrainName, localDestination, localTrainFirstArrival, localFrequency));
             console.log(trainData);
@@ -54,15 +56,45 @@ $(document).on("click", "#trainSubmit", function(event) {
             $("#trainDestination").val("");
             $("#trainFirstArrival").val("");
             $("#trainFrequency").val("");
+
+            populateTable();
         };
     };
 
 });
 
-// makes an object for each train
+// Object constructor for train data
 var TrainObjectBuilder = function(name, destination, firstArrival, freq) {
     this.trainName = name;
     this.trainDestination = destination;
     this.trainFirstArrival = firstArrival;
     this.trainFrequency = freq;
+};
+
+// populate table on page with info contained in trainData
+var populateTable = function() {
+    $("#trainSchedule").empty();
+    for (var i = 0; i < trainData.length; i++) {
+        var newRow = $("<tr>");
+        var tName = $("<td>");
+        var tDest = $("<td>");
+        var tFreq = $("<td>");
+        var tNA = $("<td>"); // next arrival
+        var tMinAway = $("<td>"); // minutes away
+        
+        tName.text(trainData[i].trainName);
+        tDest.text(trainData[i].trainDestination);
+        tFreq.text(trainData[i].trainFrequency);
+        // text for next arrival
+        // text for minutes away
+        
+        newRow.append(tName);
+        newRow.append(tDest);
+        newRow.append(tFreq);
+        // append first arrival - need to do the logic for that first
+        // append minutes away - need to do the logic for that first
+
+        // append to the table!
+        $("#trainSchedule").append(newRow);
+    };
 };
