@@ -6,13 +6,13 @@ var trainData = [];
 // SCREW MOMENT.JS BECAUSE I CAN MATH... maybe
 // below is time conversion logic
 
-// this returns the current time in minutes
+// this returns the current time of day in minutes elapsed since midnight
 var timeMinutes = function() {
     var d = new Date();
-    return(60*d.getHours())+d.getMinutes();
+    return(60*d.getHours()+d.getMinutes());
 };
 
-// this returns the time that a given train leaves in minutes
+// this returns the time of day that a given train leaves in minutes elapsed since midnight
 var whenIsTrainInService = function(i) {
     var trainTime = trainData[i].trainFirstArrival.replace(":", "");
     var hours = parseInt(trainTime.slice(0,2));
@@ -49,7 +49,7 @@ var whenIsTheNextTrain = function(i) {
 
 // this calculates the time that the next train leaves
 // lolo after writing this, I totally get why moment.js exists
-// NEVER AGAIN
+// NEVER AGAIN https://twitter.com/cool3dworld/status/696726669931970560
 var timeOfNextTrain = function(i) {
     var timeNextTrain = (timeMinutes() + whenIsTheNextTrain(i)) % 1440;
     if (timeNextTrain < 720) {
